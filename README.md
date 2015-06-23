@@ -1,2 +1,2 @@
-# OSM-Mapper
-Plot waypoints on OSM in node-webkit
+# WaypointMapper
+Nw.js mapping application.

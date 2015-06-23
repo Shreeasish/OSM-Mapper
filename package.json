@@ -1,0 +1,12 @@
+{
+	"scripts": 
+	{
+    	"start": "nw"
+	},
+	"main": "index.html",
+	"name": "Mapper",
+	"window":
+	{
+		"toolbar": false
+	}
+}

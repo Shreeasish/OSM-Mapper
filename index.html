@@ -1,0 +1,59 @@
+<!doctype <!DOCTYPE html>
+<html>
+<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.10.2/jquery.min.js"></script>
+	<link rel="stylesheet" href="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.css" />
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/leaflet/0.7.3/leaflet.js"></script>
+	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+	<title>Waypoint Mapper</title>
+	<script type="text/javascript">
+	onload = function(){
+
+		// Initialize Map Tile
+		var map = L.map('map').setView([49.267576, -122.948819], 11);
+		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {}).addTo(map);
+		window.routeLayer = L.geoJson().addTo(map);
+		// Adding interation handlers
+		$('#displayWaypoints').button({ disabled : true });
+
+
+		//TODO: Read waypoints (OBJ)-> compare to database -> Display data from database
+		$('#fileDialog').change(function(evt) {
+			// console.log($(this).val());
+			gjPath = $(this).val();
+			var fs = require('fs');
+			var data = fs.readFileSync(gjPath, "utf8");
+			window.obj = JSON.parse(data.toString('utf8').replace(/^\uFEFF/, ''));
+			// console.log(JSON.stringify(obj, null, 2));
+			console.log("Done reading file : " + gjPath);
+	    	$('#displayWaypoints').button("enable");
+	    });
+
+
+	    $('#displayWaypoints').click(function(){
+
+			window.routeLayer.clearLayers();
+			window.routeLayer.addData(window.obj);
+			$('#clearWaypoints').button("enable");
+		});
+
+	    $('#clearWaypoints').button({disabled: true});
+
+		$('#clearWaypoints').click(function(){
+			window.routeLayer.clearLayers();
+			$('#clearWaypoints').button("disable");
+		});
+	};
+	</script>
+</head>
+	
+<body style="margin:0px; padding:0px;">	
+	<div style="height: 90%; width: 100%;"  id="map"></div>	
+	<div style="padding-left:10px; margin-top:5px;">
+		<input id="fileDialog" type="file" accept=".geojson" />
+		<button id="clearWaypoints" class="button" style="float:right; margin-left:10px; margin-right:20px;">Clear</button>
+		<button id="displayWaypoints" class="button" style="float:right;">Display</button>
+	</div>
+</body>
+</html>
