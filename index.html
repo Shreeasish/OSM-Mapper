@@ -11,9 +11,10 @@
 	onload = function(){
 
 		// Initialize Map Tile
-		var map = L.map('map').setView([49.267576, -122.948819], 11);
-		L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {}).addTo(map);
+		window.map = L.map('map').setView([49.267576, -122.948819], 11);
+		L.tileLayer('http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png', {}).addTo(map);
 		window.routeLayer = L.geoJson().addTo(map);
+		window.routeArray = [];
 		// Adding interation handlers
 		$('#displayWaypoints').button({ disabled : true });
 
@@ -24,19 +25,62 @@
 			gjPath = $(this).val();
 			var fs = require('fs');
 			var data = fs.readFileSync(gjPath, "utf8");
-			window.obj = JSON.parse(data.toString('utf8').replace(/^\uFEFF/, ''));
-			// console.log(JSON.stringify(obj, null, 2));
-			console.log("Done reading file : " + gjPath);
+
+
+		
+			var rawArray = data.split("\n");
+			
+
+
+			for (var i = 0; i < rawArray.length; i++) 
+			{
+				var temp = rawArray[i].split(", ")
+				window.routeArray[i] = new Array(2)		
+				window.routeArray[i][0] = parseFloat(temp[0]);
+				window.routeArray[i][1]	= parseFloat(temp[1]);
+			};
 	    	$('#displayWaypoints').button("enable");
 	    });
 
 
-	    $('#displayWaypoints').click(function(){
+	    $('#displayWaypoints').click(function()
+	    {
+	    	
+			var poly = L.polyline(window.routeArray,{
+			color: 'blue',
+			weight: 3,
+			opacity: 1,
+			smoothFactor: 1
+			});
 
-			window.routeLayer.clearLayers();
-			window.routeLayer.addData(window.obj);
+			// var map = L.map('map');
+			poly.addTo(routeLayer).bindPopup("Path 1");
+			map.fitBounds(poly);
+
+
+			// window.counter = 1;
+			// var newCheckBox = document.createElement('input');
+			// newCheckBox.type = 'checkbox';
+			// newCheckBox.id = 'route'+(window.counter++);
+			// newCheckBox.checked = true;
+			// newCheckBox.name = newCheckBox.id;
+			// newCheckBox.setAttribute('class','name_class');
+
+
+
+
+			// var text = document.createTextNode("text 1");
+
+			// var parent = document.getElementById(name_class);
+			// parent.appendChild(newCheckBox);
+			// parent.appendChild(text);
+			// parent.appendChild(document.createElement("br"))
+
+			$('#displayWaypoints').button("disable");
 			$('#clearWaypoints').button("enable");
 		});
+
+
 
 	    $('#clearWaypoints').button({disabled: true});
 
@@ -44,16 +88,67 @@
 			window.routeLayer.clearLayers();
 			$('#clearWaypoints').button("disable");
 		});
+
+		// function addCheckboxes(name_class){
+		// 	window.counter = 1;
+		// 	var newCheckBox = document.createElement('input');
+		// 	newCheckBox.type = 'checkbox';
+		// 	newCheckBox.id = 'route'+(window.counter++);
+		// 	newCheckBox.checked = true;
+		// 	newCheckBox.name = newCheckBox.id;
+		// 	newCheckBox.setAttribute('class','name_class');
+
+
+		// 	var text = document.createTextNode("text 1");
+
+		// 	var parent = document.getElementById(name_class);
+		// 	parent.appendChild(newCheckBox);
+		// 	parent.appendChild(text);
+		// 	parent.appendChild(document.createElement("br"))
+		// 	};
+
+		// $('#green-all').click(function(){
+		// 	 $('.abc').attr('checked', false);	
+		// });
+
+
 	};
 	</script>
 </head>
 	
-<body style="margin:0px; padding:0px;">	
-	<div style="height: 90%; width: 100%;"  id="map"></div>	
-	<div style="padding-left:10px; margin-top:5px;">
-		<input id="fileDialog" type="file" accept=".geojson" />
-		<button id="clearWaypoints" class="button" style="float:right; margin-left:10px; margin-right:20px;">Clear</button>
-		<button id="displayWaypoints" class="button" style="float:right;">Display</button>
+<body style="margin:0px; padding:5px;">
+	<div  style="float: left; width: 25%;" id="left">
+		<button id="add" class="button" style="float: left">Add Waypoint</button>
+		<div 
+		style=
+			"padding: 10%; 
+			width: 200px; 
+			height: 30%;
+			font-family: Courier New;
+			overflow: auto;
+			border-radius: 25px;
+    		border: 2px solid #8AC007;
+    		padding: 20px;
+    		width: 200px;
+    		height: 150px;
+    		float: left"
+    	>
+    	 		<button id="green-all" class="button">
+    			all
+    			</button>
+    
+    	<form id="green">
+    	</form>
+		</div>
+	</div>
+	<div style="width: 75%; float: right" id="right">
+		<div style="height: 90%; width: 100%; float: right" id="map">
+		</div>
+			<div style="padding-left:10px; float: bottom; margin-top: 10px">
+				<input id="fileDialog" type="file" accept=".txt" style="margin-top: 30px"/>
+				<button id="clearWaypoints" class="button" style="float:right; margin-left:10px; margin-right:20px; margin-top: 20px">Clear</button>
+				<button id="displayWaypoints" class="button" style="float:right; margin-top: 20px">Display</button>
+			</div>
 	</div>
 </body>
 </html>
