@@ -7,6 +7,10 @@
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
 	<title>Waypoint Mapper</title>
+	<style type="text/css">
+		.routeList li { height: 30px; margin:0px; padding:0px; line-height: 30px; }
+		.routeList input { margin: 0px 10px 0px 0px; }
+	</style>
 	<script type="text/javascript">
 	onload = function(){
 
@@ -14,73 +18,92 @@
 		window.map = L.map('map').setView([49.267576, -122.948819], 11);
 		L.tileLayer('http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png', {}).addTo(map);
 		window.routeLayer = L.geoJson().addTo(map);
-		window.routeArray = [];
+		// window.routeArray = [];
+		window.RED = [];
+		window.BLUE = [];
+		window.GREEN = [];
 		// Adding interation handlers
 		$('#displayWaypoints').button({ disabled : true });
 
 
-		//TODO: Read waypoints (OBJ)-> compare to database -> Display data from database
 		$('#fileDialog').change(function(evt) {
 			// console.log($(this).val());
 			gjPath = $(this).val();
 			var fs = require('fs');
 			var data = fs.readFileSync(gjPath, "utf8");
 
-
-		
 			var rawArray = data.split("\n");
+
+			for (var i = rawArray.length - 1; i >= 0; i--) {
+
+				var ArrayWithProp = rawArray[i].split(":");
+				
+				console.log("" + ArrayWithProp[0]);
+				console.log("" + ArrayWithProp[1]);
 			
+				//display [1] with color
+				var waypoints = ArrayWithProp[1].split(" ");
+
+				//temp now holds a set of waypoints as an array 
+				//need to cut it further into an array of arrays
+				//waypoints[i] is a lat long like "49.41231, 123.321231"
+				for (var i = waypoints.length - 1; i >= 0; i--) {
+					var temp = waypoints[i].split(", ");
+					
+				    var routeArray[i] = new Array(2);		
+					routeArray[i][0] = parseFloat(temp[0]);
+					routeArray[i][1]	= parseFloat(temp[1]);
+					
+					var poly = L.polyline(window.routeArray,{
+					
+					color: String(ArrayWithProp[0]),
+					weight: 3,
+					opacity: 1,
+					smoothFactor: 1
+					
+					});
 
 
-			for (var i = 0; i < rawArray.length; i++) 
-			{
-				var temp = rawArray[i].split(", ")
-				window.routeArray[i] = new Array(2)		
-				window.routeArray[i][0] = parseFloat(temp[0]);
-				window.routeArray[i][1]	= parseFloat(temp[1]);
+
+				};
 			};
+			
+			// for (var i = 0; i < rawArray.length; i++) 
+			// {
+			// 	var temp = rawArray[i].split(", ");
+				
+
+			// 	// TODO : Create 3 arrays, RED, GREEN, BLUE
+				// window.routeArray[i] = new Array(2);		
+				// window.routeArray[i][0] = parseFloat(temp[0]);
+				// window.routeArray[i][1]	= parseFloat(temp[1]);
+			// 	// TODO : Insert a new <li> into the appropriate 
+			// 	// list based on what you see in the file. Make sure you
+			// 	// set the data attribute as shown here : https://api.jquery.com/data/
+			// };
+
+
+
 	    	$('#displayWaypoints').button("enable");
 	    });
 
 
 	    $('#displayWaypoints').click(function()
 	    {
-	    	
 			var poly = L.polyline(window.routeArray,{
-			color: 'blue',
-			weight: 3,
-			opacity: 1,
-			smoothFactor: 1
+				color: 'blue',
+				weight: 3,
+				opacity: 1,
+				smoothFactor: 1
 			});
 
 			// var map = L.map('map');
 			poly.addTo(routeLayer).bindPopup("Path 1");
 			map.fitBounds(poly);
 
-
-			// window.counter = 1;
-			// var newCheckBox = document.createElement('input');
-			// newCheckBox.type = 'checkbox';
-			// newCheckBox.id = 'route'+(window.counter++);
-			// newCheckBox.checked = true;
-			// newCheckBox.name = newCheckBox.id;
-			// newCheckBox.setAttribute('class','name_class');
-
-
-
-
-			// var text = document.createTextNode("text 1");
-
-			// var parent = document.getElementById(name_class);
-			// parent.appendChild(newCheckBox);
-			// parent.appendChild(text);
-			// parent.appendChild(document.createElement("br"))
-
 			$('#displayWaypoints').button("disable");
 			$('#clearWaypoints').button("enable");
 		});
-
-
 
 	    $('#clearWaypoints').button({disabled: true});
 
@@ -89,56 +112,56 @@
 			$('#clearWaypoints').button("disable");
 		});
 
-		// function addCheckboxes(name_class){
-		// 	window.counter = 1;
-		// 	var newCheckBox = document.createElement('input');
-		// 	newCheckBox.type = 'checkbox';
-		// 	newCheckBox.id = 'route'+(window.counter++);
-		// 	newCheckBox.checked = true;
-		// 	newCheckBox.name = newCheckBox.id;
-		// 	newCheckBox.setAttribute('class','name_class');
+		$('#tabs').tabs();
 
+		// TODO : onchange handlers need to check toggled or not
+		$('#routeListRed input').on('change', function(){
+			// Do what you need to
+			alert('Red ' + $(this).data('id'));
+		});
 
-		// 	var text = document.createTextNode("text 1");
+		$('#routeListGreen input').on('change', function(){
+			// Do what you need to
+			alert('Green');
+		});
 
-		// 	var parent = document.getElementById(name_class);
-		// 	parent.appendChild(newCheckBox);
-		// 	parent.appendChild(text);
-		// 	parent.appendChild(document.createElement("br"))
-		// 	};
-
-		// $('#green-all').click(function(){
-		// 	 $('.abc').attr('checked', false);	
-		// });
-
-
+		$('#routeListBlue input').on('change', function(){
+			// Do what you need to
+			alert('Blue');
+		});
 	};
 	</script>
 </head>
-	
-<body style="margin:0px; padding:5px;">
-	<div  style="float: left; width: 25%;" id="left">
-		<button id="add" class="button" style="float: left">Add Waypoint</button>
-		<div 
-		style=
-			"padding: 10%; 
-			width: 200px; 
-			height: 30%;
-			font-family: Courier New;
-			overflow: auto;
-			border-radius: 25px;
-    		border: 2px solid #8AC007;
-    		padding: 20px;
-    		width: 200px;
-    		height: 150px;
-    		float: left"
-    	>
-    	 		<button id="green-all" class="button">
-    			all
-    			</button>
-    
-    	<form id="green">
-    	</form>
+
+<!-- TODO: Change the jQuery UI font face to Arial -->
+
+<body style="margin:0px; padding:0px;">
+	<div style="float: left; width: 24%; border:none;" id="tabs">
+		<ul>
+		    <li><a href="#tabs-1">Red</a></li>
+		    <li><a href="#tabs-2">Green</a></li>
+		    <li><a href="#tabs-3">Blue</a></li>
+  		</ul>
+		<div id="tabs-1">
+			<ul style="list-style-type:none; margin:0px; padding:0px;" class="routeList" id="routeListRed">
+				<li ><input type="checkbox" data-id="0" />AAA</li>
+				<li ><input type="checkbox" data-id="1" />AAA</li>
+				<li ><input type="checkbox" data-id="2" />AAA</li>
+			</ul>
+		</div>
+		<div id="tabs-2">
+			<ul style="list-style-type:none; margin:0px; padding:0px;"  class="routeList" id="routeListGreen">
+				<li ><input type="checkbox" data-id="0" />BBB</li>
+				<li ><input type="checkbox" data-id="1" />BBB</li>
+				<li ><input type="checkbox" data-id="2" />BBB</li>
+			</ul>
+		</div>
+		<div id="tabs-3">
+			<ul style="list-style-type:none; margin:0px; padding:0px;"  class="routeList" id="routeListBlue">
+				<li ><input type="checkbox" data-id="0" />CCC</li>
+				<li ><input type="checkbox" data-id="1" />CCC</li>
+				<li ><input type="checkbox" data-id="2" />CCC</li>
+			</ul>
 		</div>
 	</div>
 	<div style="width: 75%; float: right" id="right">
