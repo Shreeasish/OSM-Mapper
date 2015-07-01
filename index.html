@@ -26,66 +26,68 @@
 		$('#displayWaypoints').button({ disabled : true });
 
 
-		$('#fileDialog').change(function(evt) {
-			// console.log($(this).val());
+		$('#fileDialog').change(function(evt) 
+		{
+
 			gjPath = $(this).val();
+
 			var fs = require('fs');
 			var data = fs.readFileSync(gjPath, "utf8");
 
 			var rawArray = data.split("\n");
 
-			for (var i = rawArray.length - 1; i >= 0; i--) {
-
-				var ArrayWithProp = rawArray[i].split(":");
+			for (var i = 0; i <= rawArray.length; i++) 
+			{
+				//for loop for each line = each polyline
+				var seperatedArray = rawArray[i].split(" ");
+				var color = String(seperatedArray[0]);
 				
-				console.log("" + ArrayWithProp[0]);
-				console.log("" + ArrayWithProp[1]);
-			
-				//display [1] with color
-				var waypoints = ArrayWithProp[1].split(" ");
+				var waypoints = seperatedArray.slice(1);
 
-				//temp now holds a set of waypoints as an array 
-				//need to cut it further into an array of arrays
-				//waypoints[i] is a lat long like "49.41231, 123.321231"
-				for (var i = waypoints.length - 1; i >= 0; i--) {
-					var temp = waypoints[i].split(", ");
-					
-				    var routeArray[i] = new Array(2);		
-					routeArray[i][0] = parseFloat(temp[0]);
-					routeArray[i][1]	= parseFloat(temp[1]);
-					
-					var poly = L.polyline(window.routeArray,{
-					
-					color: String(ArrayWithProp[0]),
-					weight: 3,
-					opacity: 1,
-					smoothFactor: 1
-					
+				var routeArray = [];
+
+							for (var j = 0; j < waypoints.length; j++) 
+							{
+								var temp = waypoints[j].split(",")
+
+								routeArray[j] = new Array(2);
+
+								routeArray[j][0] = parseFloat(temp[0]);
+								routeArray[j][1] = parseFloat(temp[1]);
+							};
+
+					var poly = L.polyline(routeArray,{
+						color: color,
+						weight: 3,
+						opacity: 1,
+						smoothFactor: 1
 					});
 
+					poly.addTo(window.map);
+
+
+					if (color === 'red') {
+						RED.push(poly);
+					}
+					
+					else if(color === 'blue') {
+						
+						BLUE.push(poly);
+					}
+					
+					else if (color === 'green') {
+						GREEN.push(poly);
+					}
 
 
 				};
-			};
-			
-			// for (var i = 0; i < rawArray.length; i++) 
-			// {
-			// 	var temp = rawArray[i].split(", ");
-				
-
-			// 	// TODO : Create 3 arrays, RED, GREEN, BLUE
-				// window.routeArray[i] = new Array(2);		
-				// window.routeArray[i][0] = parseFloat(temp[0]);
-				// window.routeArray[i][1]	= parseFloat(temp[1]);
-			// 	// TODO : Insert a new <li> into the appropriate 
-			// 	// list based on what you see in the file. Make sure you
-			// 	// set the data attribute as shown here : https://api.jquery.com/data/
-			// };
 
 
 
-	    	$('#displayWaypoints').button("enable");
-	    });
+
+
+
+    	});
 
 
 	    $('#displayWaypoints').click(function()
