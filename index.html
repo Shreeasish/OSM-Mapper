@@ -19,9 +19,9 @@
 		L.tileLayer('http://{s}.tile2.opencyclemap.org/transport/{z}/{x}/{y}.png', {}).addTo(map);
 		window.routeLayer = L.geoJson().addTo(map);
 		// window.routeArray = [];
-		window.RED = [];
-		window.BLUE = [];
-		window.GREEN = [];
+
+		window.Routes = { 'red' : [], 'green' : [], 'blue' : [] };
+
 		// Adding interation handlers
 		$('#displayWaypoints').button({ disabled : true });
 
@@ -72,98 +72,56 @@
 
 					checkbox.type = "checkbox";
 
-					if (color === 'red') {
 
-						poly.bindPopup("RED " + (RED.length + 1) );
-
-						var textNode = document.createTextNode("Path " + (RED.length + 1));
-
-						checkbox.setAttribute("data-id",RED.length);
-
-						li.appendChild(checkbox);
-						li.appendChild(textNode);						
-						
-						RED.push(poly);
-						document.getElementById("routeListred").appendChild(li);
-
-						window.map.addLayer(poly);
-
-					}
-					
-					else if(color === 'blue') {
-						
-						poly.bindPopup("BLUE "+ (BLUE.length + 1) );
-
-						var textNode = document.createTextNode("Path " + (BLUE.length + 1));
-						
-						checkbox.setAttribute("data-id",BLUE.length);						
-						li.appendChild(checkbox);
-						li.appendChild(textNode);
-						BLUE.push(poly);
-
-						document.getElementById("routeListblue").appendChild(li);
-
-
-						window.map.addLayer(poly);
-
-					}
-					
-					else if (color === 'green') {
-
-						poly.bindPopup("GREEN " + (GREEN.length + 1) );
-						
-						var textNode = document.createTextNode("Path " + (GREEN.length + 1));
-
-						checkbox.setAttribute("data-id",GREEN.legth);
-						li.appendChild(checkbox);
-						li.appendChild(textNode);
-						GREEN.push(poly);
+					poly.bindPopup(color.toUpperCase() + " " + (window.Routes[color].length + 1) );
+					var textNode = document.createTextNode("Path " + (window.Routes[color] + 1));
+					checkbox.setAttribute("data-id", window.Routes[color].length);
+					li.appendChild(checkbox);
+					li.appendChild(textNode);						
+					window.Routes[color].push(poly);
+					document.getElementById("routeList"+color).appendChild(li);
+				
+					window.map.addLayer(poly);
 
 
 
-						document.getElementById("routeListgreen").appendChild(li);
 
 
-						window.map.addLayer(poly);
-
-					}
-
-
+					window.map.addLayer(poly);
 
 				};
 
 
-		$('#routeListred input').on('change', function(){
+					$('#tabs input').on('change', function(){
+						var color = $(this).class;
+						
 						if($(this).is(':checked'))
 						{
-							window.map.addLayer(window.RED[$(this).data('id')]);
+							window.map.addLayer(window.Routes.red[$(this).data('id')]);
 						}
 						else
 						{
-							window.map.removeLayer(window.RED[$(this).data('id')]);
+							window.map.removeLayer(window.Routes.red[$(this).data('id')]);
 						}
 					});
-
 					$('#routeListblue input').on('change', function(){
 						if($(this).is(':checked'))
 						{
-							window.map.addLayer(window.BLUE[$(this).data('id')]);
+							window.map.addLayer(window.Routes.blue[$(this).data('id')]);
 						}
 						else
 						{
-							window.map.removeLayer(window.BLUE[$(this).data('id')]);
+							window.map.removeLayer(window.Routes.blue[$(this).data('id')]);
 						}
 					});
-
-
 					$('#routeListgreen input').on('change', function(){
 						if($(this).is(':checked'))
 						{
-							window.map.addLayer(window.GREEN[$(this).data('id')]);
+							window.map.addLayer(window.Routes.green[$(this).data('id')]);
 						}
 						else
 						{
-							window.map.removeLayer(window.GREEN[$(this).data('id')]);
+							window.map.removeLayer(window.Routes.green[$(this).data('id')]);
 						}
 					});
 
